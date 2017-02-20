@@ -1,4 +1,4 @@
-from gla import generate_codebook
+from gla import generate_codebook,distances
 from voronoi import *
 import random
 import numpy as np
@@ -30,10 +30,13 @@ sq1,ap1,r1 = generate_codebook(state_points1,8,0.1);
 print "State Centroids:"
 print np.asarray(sq1)
 
-
-voronoi1 = VoronoiExtractor(state_points1)
+voronoi1 = VoronoiExtractor(np.asarray(sq1))
 voronoi1.getRegionsVertices()
 voronoi1.plot('test1.png')
+
+distances = distances([0,0],np.asarray(sq1))
+print distances
+print distances.argmin()
 
 
 

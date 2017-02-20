@@ -6,6 +6,7 @@ Heuristic process that can be used to generate cluster points from a big amount 
 import math
 from functools import reduce
 from collections import defaultdict
+import numpy as np
 
 _size_data = 0
 _dim = 0
@@ -188,5 +189,11 @@ def euclid_squared(a, b):
     return sum((x_a - x_b) ** 2 for x_a, x_b in zip(a, b))
 
 
-# def euclid(a, b):
-#     return math.sqrt(euclid_squared(a, b))
+def euclid(a, b):
+    return math.sqrt(euclid_squared(a, b))
+
+def distances(a, v):
+    distances = []
+    for p in v:
+        distances = np.append(distances,euclid(a,p))
+    return distances    
