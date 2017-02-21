@@ -184,13 +184,47 @@ def avg_distortion_c_list(c_list, data, size=None):
                    for i, c_i in enumerate(c_list)),
                   0.0)
 
+def point_inside_polygon(point,poly):
+
+    x = point[0]
+    y = point[1]
+
+    n = len(poly)
+    inside =False
+
+    p1x,p1y = poly[0]
+    for i in range(n+1):
+        p2x,p2y = poly[i % n]
+        if y > min(p1y,p2y):
+            if y <= max(p1y,p2y):
+                if x <= max(p1x,p2x):
+                    if p1y != p2y:
+                        xinters = (y-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
+                    if p1x == p2x or x <= xinters:
+                        inside = not inside
+        p1x,p1y = p2x,p2y
+
+    return inside    
+
 
 def euclid_squared(a, b):
+    """Distancia Euclidiana
+    
+    Calcula la distancia euclidiana al cuadrado. Solo funciona
+    para espacios en dos dimensiones
+    
+    Arguments:
+        a {[type]} -- Un vector [x,y]
+        b {[type]} -- Otro vector [x,y]
+    
+    Returns:
+        [type] -- [description]
+    """
     return sum((x_a - x_b) ** 2 for x_a, x_b in zip(a, b))
 
 
 def euclid(a, b):
-    return math.sqrt(euclid_squared(a, b))
+    return np.linalg.norm(a-b)
 
 def distances(a, v):
     distances = []

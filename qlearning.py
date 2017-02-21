@@ -27,5 +27,5 @@ class QLearning:
 
 	def setQ(self,newQ):
 		self.Q = newQ
-		return self.newQ	
+		return self.newQ		
 
