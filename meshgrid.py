@@ -5,35 +5,64 @@ from math import sin,cos
 class Meshgrid:
 
 	def __init__(self):
-		# x va desde 0 hasta 1
-		self.xmax = 10
-		# y va desde 0 hasta 1
-		self.ymax = 10
+		# Setear limites de x y y
+		self.xmax = 10.0
+		self.xmin = -10.0
+		self.ymax = 10.0
+		self.ymin = -10.0
+
+		# Setear limites de r y azimuth
+		self.azimuthmax = 360.0
+		self.azimuthmin = 0.0
+		self.rmax = 1.0
+		self.rmin = 0.0
+
 		# posicion inicial 0,0
 		self.x = 0
 		self.y = 0
-		self.azimuthmax = 360
-		self.rmax = 1
+		
 
-	def move(self,x,y,azimuth,r):
+	def move(self,state,action):
+
+		# print "move"
+		# print state
+		# print action
+
+		x = state[0]
+		y = state[1]
+
+		r = action[0]
+		azimuth = action[1]
 
 		if(x >= self.xmax):
-			return False
+			raise ValueError("x >= self.xmax",x,self.xmax)
+		if(x <= self.xmin):
+			raise ValueError("x <= self.xmin",x,self.xmin)
 		if(y >= self.ymax):
-			return False	
+			raise ValueError("y >= self.ymax",y,self.ymax)
+		if(y <= self.ymin):
+			raise ValueError("y <= self.ymin",y,self.ymin)
 
 		if(azimuth >= self.azimuthmax):
-			return False
+			raise ValueError("azimuth >= self.azimuthmax",azimuth,self.azimuthmax)
+		if(azimuth < self.azimuthmin):
+			raise ValueError("azimuth < self.azimuthmin",azimuth,self.azimuthmin)	
 		if(r > self.rmax):
-			return False
+			raise ValueError("r > self.rmax",r,self.rmax)
+		if(r < self.rmin):
+			raise ValueError("r < self.rmin",r,self.rmin)	
 
 		newx = x + cos(azimuth) * r
 		newy = y + sin(azimuth) * r
 
 		if(newx >= self.xmax):
-			return False
+			raise ValueError("x <= self.xmax",x,self.xmax)
+		if(newx <= self.xmin):
+			raise ValueError("x <= self.xmin",x,self.xmin)	
 		if(newy >= self.ymax):
-			return False
+			raise ValueError("newy >= self.ymax",newy,self.ymax)
+		if(newy <= self.ymin):
+			raise ValueError("newy <= self.ymin",newy,self.ymin)	
 
 		return [newx,newy]
 		

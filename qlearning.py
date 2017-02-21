@@ -27,5 +27,15 @@ class QLearning:
 
 	def setQ(self,newQ):
 		self.Q = newQ
-		return self.newQ		
+		return self.newQ	
+
+	def updateQ(self, r, state, next_state, action):
+	    rsa = r
+	    qsa = self.Q[state][action]
+	    new_q = qsa + self.alpha * (rsa + self.gamma * max(self.Q[next_state, :]) - qsa)
+	    self.Q[state, action] = new_q
+	    # renormalize row to be between 0 and 1
+	    # rn = q[state][q[state] > 0] / np.sum(q[state][q[state] > 0])
+	    # q[state][q[state] > 0] = rn
+	    return self.Q
 
