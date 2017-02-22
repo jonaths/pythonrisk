@@ -5,9 +5,12 @@ from random import randrange
 import numpy as np
 from meshgrid import Meshgrid
 from reward import Reward
+from endcondition import EndCondition
 from random import uniform
 from qlearning import *
 from tools import Tools
+import json
+
 
 class Agent:
 
@@ -24,8 +27,9 @@ class Agent:
 		self.actions = actions
 		self.domain = Tools.getArrayMinMax(states)
 		self.position_history = []
+		self.action_history = []
 
-	def setPosition(self,position):
+	def setAgent(self,position):
 		"""Define el estado actual del agente
 		
 		Define en cual de los prototipos de self.states esta el agente mediante s indice
@@ -54,11 +58,39 @@ class Agent:
 		return self.states[self.getCurrentState()]	
 
 	def setQLearning(self,alpha,gamma):
+		"""Inicializa el algoritmo Q Learning
+		
+		Arguments:
+			alpha {[type]} -- [description]
+			gamma {[type]} -- [description]
+		"""
 		self.qlearning = QLearning(alpha,gamma)
 		self.qlearning.setZeros(self.states.shape[0],self.actions.shape[0])	
 
 	def updateQ(self, r, state, next_state, action):
 		return self.qlearning.updateQ(r, state, next_state, action)
+
+	def getAction(self,selection_policy):
+		"""Selecciona una accion
+		
+		Selecciona una accion en funcion de una politica
+		
+		Arguments:
+			selection_policy {string} -- el nombre de la politica
+		
+		Returns:
+			[int] -- El id de la accion
+		"""
+
+		if selection_policy == 'random':
+			action = self.getRandomAction()
+		else: 
+			action = self.getRandomAction()
+
+		# Para poder serializar y guardar en json	
+		self.action_history.append(np.asarray(self.getActions()[action]).tolist())	
+		
+		return action		
 
 	def getRandomAction(self):
 		"""Selecciona una accion aleatoria
@@ -72,7 +104,41 @@ class Agent:
 		return action_index
 
 	def getRandomActionValue(self):
+		"""Recupera el valor de una accion aleatoria
+		
+		Recupera un par [x,y] de una accion
+		
+		Returns:
+			[type] -- [x,y]
+		"""
 		return self.actions[self.getRandomAction()]		
+
+	def saveAgentHistoryToJson(self, filename = 'out.json'):
+		print "Guardando informacion en " , filename
+		dict = {}
+		dict['action_history'] = self.action_history
+		dict['position_history'] = self.position_history
+
+		with open(filename, 'wb') as outfile:
+			json.dump(dict, outfile)
+
+	def plotTrajectory(self,plotname = 'trajectory.png'):
+
+		with open('out.json') as json_data:
+			data = json.load(json_data)
+			print(data)
+
+		data = np.array(data['position_history'])
+		# Lines on top of scatter
+		plt.figure()
+
+		# Scatter plot on top of lines
+		plt.plot(data[:,0], data[:,1], 'r', zorder=1, lw=2)
+		plt.scatter(data[:,0], data[:,1], s=60, zorder=2)
+		plt.title('Dots on top of lines')
+
+		plt.savefig('Figures/'+plotname)
+
 
 			
 
@@ -99,7 +165,7 @@ state_voronoi.plot('states.png')
 
 print "Action Samples:"
 action_samples = np.random.randint(0,100,size=(100,2)) * 1.0
-action_samples[:,0] *= 0.01
+action_samples[:,0] *= 0.01 / 2
 action_samples[:,1] *= 0.01 * 360
 print action_samples
 
@@ -114,18 +180,19 @@ action_voronoi.plot('actions.png')
 
 # Define al agente
 agent = Agent(states,actions)
-agent.setPosition([0,0])
+agent.setAgent([0,0])
 agent.setQLearning(1,1)
 
 # Crea el meshworld
 meshworld = Meshgrid()
 reward = Reward()
+endcondition = EndCondition()
 
 # Recupera el estado actual desde su indice
 print "currentstate"
 currentstate_index = agent.getCurrentState();
 
-for x in range(0, 100):
+for x in range(0, 20):
 
 	currentstate = agent.getStates()[currentstate_index]
 	currentposition = agent.getCurrentPosition()
@@ -135,7 +202,7 @@ for x in range(0, 100):
 	print currentposition
 
 	# Recupera una accion aleatoria
-	action_index = agent.getRandomAction();
+	action_index = agent.getAction('random');
 	action = agent.getActions()[action_index]
 	print "newaction"
 	print action_index, action
@@ -149,7 +216,7 @@ for x in range(0, 100):
 	current_reward = reward.reward(currentposition,action,newposition)
 	print current_reward
 
-	agent.setPosition(newposition)
+	agent.setAgent(newposition)
 
 	print "newstate"
 	newstate_index = agent.getCurrentState()
@@ -157,7 +224,16 @@ for x in range(0, 100):
 
 	print agent.updateQ(current_reward, currentstate_index, newstate_index, action_index)
 
+	# Verifica si debe terminar el episodio
+	if endcondition.verify(currentposition,action,newposition,current_reward):
+		break
+
+	# Determina el nuevo estado
 	currentstate_index = newstate_index
+
+	
+agent.saveAgentHistoryToJson()
+agent.plotTrajectory();
 
 
 

@@ -56,9 +56,9 @@ class Meshgrid:
 		newy = y + sin(azimuth) * r
 
 		if(newx >= self.xmax):
-			raise ValueError("x <= self.xmax",x,self.xmax)
+			raise ValueError("newx >= self.xmax",newx,self.xmax)
 		if(newx <= self.xmin):
-			raise ValueError("x <= self.xmin",x,self.xmin)	
+			raise ValueError("newx <= self.xmin",newx,self.xmin)	
 		if(newy >= self.ymax):
 			raise ValueError("newy >= self.ymax",newy,self.ymax)
 		if(newy <= self.ymin):
