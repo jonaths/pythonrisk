@@ -106,21 +106,41 @@ class VoronoiExtractor:
         regions, vertices = self.voronoi_finite_polygons_2d(vor)
         return regions,vertices
 
-    def plot(self,filename='plot.png'):
+    def plot(self,filename='plot.png',values=None):
 
         # compute Voronoi tesselation
         vor = Voronoi(self.points)
 
         # plot
         regions, vertices = self.voronoi_finite_polygons_2d(vor)
+
+        # Si existe un vector de valores (debe haber un valor por cada seccion del diagrama de voronoi)
+        # entones usalo para especificar los colores de cada seccion. 
+        if(values != None):
+            # Recupera los valores y los normaliza
+            values = np.array(values)
+            max_value = np.amax(values)
+            if(max_value == 0):
+                values = values - np.amin(values) * 1.0
+                max_value = np.amax(values)
+                values = values * 1.0 / max_value
+            else:    
+                values = values * 1.0 / max_value
+            # colorize de acuerdo a los valores
+            for region in range(len(regions)):
+                polygon = vertices[regions[region]]
+                plt.fill(*zip(*polygon), alpha=values[region], color='blue')
+        else:
+            # colorize
+            for region in regions:
+                polygon = vertices[region]
+                plt.fill(*zip(*polygon), alpha=0.4)     
         
-        # colorize
-        for region in regions:
-            polygon = vertices[region]
-            plt.fill(*zip(*polygon), alpha=0.4)
+        
 
         plt.plot(self.points[:,0], self.points[:,1], 'ko')
         plt.xlim(vor.min_bound[0] - 0.1, vor.max_bound[0] + 0.1)
         plt.ylim(vor.min_bound[1] - 0.1, vor.max_bound[1] + 0.1)
 
         plt.savefig('Figures/'+filename)
+    

@@ -6,10 +6,10 @@ class Meshgrid:
 
 	def __init__(self):
 		# Setear limites de x y y
-		self.xmax = 10.0
-		self.xmin = -10.0
-		self.ymax = 10.0
-		self.ymin = -10.0
+		self.xmax = 4.0
+		self.xmin = -4.0
+		self.ymax = 4.0
+		self.ymin = -4.0
 
 		# Setear limites de r y azimuth
 		self.azimuthmax = 360.0
@@ -55,14 +55,23 @@ class Meshgrid:
 		newx = x + cos(azimuth) * r
 		newy = y + sin(azimuth) * r
 
+		# if(newx >= self.xmax):
+		# 	raise ValueError("newx >= self.xmax",newx,self.xmax)
+		# if(newx <= self.xmin):
+		# 	raise ValueError("newx <= self.xmin",newx,self.xmin)	
+		# if(newy >= self.ymax):
+		# 	raise ValueError("newy >= self.ymax",newy,self.ymax)
+		# if(newy <= self.ymin):
+		# 	raise ValueError("newy <= self.ymin",newy,self.ymin)	
+
 		if(newx >= self.xmax):
-			raise ValueError("newx >= self.xmax",newx,self.xmax)
+			return [x,y]
 		if(newx <= self.xmin):
-			raise ValueError("newx <= self.xmin",newx,self.xmin)	
+			return [x,y]
 		if(newy >= self.ymax):
-			raise ValueError("newy >= self.ymax",newy,self.ymax)
+			return [x,y]
 		if(newy <= self.ymin):
-			raise ValueError("newy <= self.ymin",newy,self.ymin)	
+			return [x,y]
 
 		return [newx,newy]
 		

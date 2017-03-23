@@ -3,7 +3,9 @@ from pylab import meshgrid,cm,imshow,contour,clabel,colorbar,axis,title,show
 
 # the function that I'm going to plot
 def z_func(x,y):
- return (1-(x**2+y**3))*exp(-(x**2+y**2)/2)
+	z = (1-(x**2+y**3))*exp(-(x**2+y**2)/2)
+	print z
+	return z
  
 x = arange(-3.0,3.0,0.1)
 y = arange(-3.0,3.0,0.1)

@@ -1,10 +1,12 @@
 import numpy as np
+import random
 
 class QLearning:	
 
-	def __init__(self,alpha,gamma):
-		self.alpha = 0.1
-		self.gamma = 0.1
+	def __init__(self,alpha,gamma,epsilon):
+		self.alpha = alpha
+		self.gamma = gamma
+		self.epsilon = epsilon
 		
 
 	def setZeros(self,num_states,num_actions):
@@ -29,6 +31,9 @@ class QLearning:
 		self.Q = newQ
 		return self.newQ	
 
+	def setEpsilon(epsilon):
+		this.epsilon = epsilon	
+
 	def updateQ(self, r, state, next_state, action):
 	    rsa = r
 	    qsa = self.Q[state][action]
@@ -38,4 +43,32 @@ class QLearning:
 	    # rn = q[state][q[state] > 0] / np.sum(q[state][q[state] > 0])
 	    # q[state][q[state] > 0] = rn
 	    return self.Q
+
+	def getAction(self,state):
+
+		# Probabilidad de escoger una accion aleatoria
+		prob = random.random()
+
+		# Si epsilon = 1 siempre elige una aleatoria
+		# Si epsilon = 0 nunca elige una aleatoria
+		if(prob < self.epsilon):
+			print "action max"
+			num_states = np.asarray(self.Q).shape[1]
+			action = random.randint(0,num_states-1)
+		else:	
+			print "action random"
+			action = np.argmax(self.Q[state])
+		print action
+
+		return action   
+
+	def getMaxVal(self):
+
+		max = []
+		for r in self.Q:
+			max.append(np.amax(r))
+		return max
+
+	# def reMapQ(states,statesprime):
+	# 	aqui voy... funcion para remapear Q	 
 

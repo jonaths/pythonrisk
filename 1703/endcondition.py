@@ -7,7 +7,10 @@ import numpy as np
 class EndCondition:
 	
 	def __init__(self):
-		self.default = 1
+		self.counter = 0
+
+	def getCounter(self):
+		return self.counter	
 
 	def verify(self,state,action,stateprime,reward):
 		"""Verifica si debe terminar o no
@@ -25,24 +28,17 @@ class EndCondition:
 			bool -- [description]
 		"""
 
-		print "verify"
+		# print "verify"
+		# print state,action,stateprime,reward
 
-		print state,action,stateprime,reward
-		hole = [0,2]
-		goal = [0,-1.5]
+		# IMPORTANTE: asegurarse que la condicion de paro tenga alguna relacion con la funcion de recompensa en reward.py
 
-		distance_to_hole = euclid(np.asarray(hole),np.asarray(stateprime))
-		distance_to_goal = euclid(np.asarray(goal),np.asarray(stateprime))
+		print stateprime
 
-		print distance_to_hole
-		print distance_to_goal
-
-		if distance_to_hole < 0.5:
-			print "End hole: " , hole, distance_to_hole
+		if(stateprime[0] == 3 and stateprime[1] == 0):
 			return True
 
-		if distance_to_goal < 0.5:
-			print "End goal: " , hole, distance_to_goal
+		if(stateprime[0] == 7 and stateprime[1] == 0):
 			return True	
 	
 		return False
