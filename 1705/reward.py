@@ -66,6 +66,8 @@ class Reward:
 		elif x==7 and y==0:
 			reward = 11	
 		elif x==11 and y==0:
-			reward = 16		
+			reward = 16
+		elif x==15 and y==0:
+			reward = 21			
 		
 		return reward

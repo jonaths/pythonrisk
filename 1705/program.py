@@ -13,6 +13,7 @@ import json
 from qlearning import *
 from listheatmap import plotheatmap
 from agentanalyzer import AgentAnalyzer
+import sys
 
 
 class Agent:
@@ -193,9 +194,17 @@ agent.setQLearning(0.1,0.8,1.0)
 reward = Reward()
 endcondition = EndCondition()
 
-episodes = 5000
-maxsteps = 40
+# El numero de episodios
+episodes = 4000
+
+# El numero de pasos de cada episodio
+maxsteps = 500
+
+# Cuantas veces ha encontrado una salida
 end_counter = 0
+
+# El presupuesto inicial (igual al numero de pasos)
+init_budget = maxsteps
 
 log = {}
 log['rewards'] = []
@@ -205,6 +214,8 @@ log['steps'] = []
 for i in range(0,episodes):
 
 	currentstate_index = agent.getCurrentState();
+	budget = init_budget
+	print budget
 
 	print "Nuevo episodio " + str(i) + "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
@@ -212,13 +223,21 @@ for i in range(0,episodes):
 
 		print "Nueva iteracion " + str(j) + " ==========================================================="
 
-		print "currentstate"
+		# Presupuesto
+		print "budget:", budget
+
+		# Epsilon
+		epsilon = budget * 1.0 / init_budget
+		agent.setEpsilon( epsilon )
+		print "epsilon:", epsilon	
+
+		# Estado actual
 		currentstate = agent.getStates()[currentstate_index]
 		currentposition = agent.getCurrentPosition()
-		print currentstate_index, currentstate
+		print "currentstate:", currentstate_index, currentstate
 
-		print "currentposition"
-		print currentposition
+		# Posicion actual
+		print "currentposition:", currentposition
 
 		# Solo para debugear, si es true la condicion la decision se hara a mano
 		if i > (episodes + 5):
@@ -234,38 +253,47 @@ for i in range(0,episodes):
 
 		# action_index = agent.getAction('qlearning');	
 		action = agent.getActions()[action_index]
-		print "newaction"
-		print action_index, action
+		print "newaction:", action_index, action
 
 		# Recupera el nuevo estado a traves de ejecutar una accion
-		print "newposition"
+		
 		newposition = gridworld.move(agent.getCurrentPosition(),action)
-		print newposition
+		print "newposition:", newposition
 
-		print "reward"
 		current_reward = reward.reward(currentposition,action,newposition)
-		print current_reward
+		print "reward:", current_reward
 
+		# Actualiza el budget con la ultima recompensa
+		budget += current_reward
+		
 		agent.setAgent(newposition)
 
-		print "newstate"
+		
 		newstate_index = agent.getCurrentState()
-		print newstate_index
+		print "newstate:", newstate_index
 
-		print "Q epsilon: " + str(agent.getEpsilon())
+		print "Q epsilon:",str(agent.getEpsilon())
 
-		print "newQ: " + str(agent.updateQ(current_reward, currentstate_index, newstate_index, action_index))
+		print "newQ:",str(agent.updateQ(current_reward, currentstate_index, newstate_index, action_index))
 
 		# Verifica si debe terminar el episodio
 		if endcondition.verify(currentposition,action,newposition,current_reward):
-			print "endingposition: " + str(newposition)
+			print "endingposition:" + str(newposition)
 			end_counter = end_counter + 1
 			print "Ending ------------------------------------------------------------------"
 			break
 
 		# Determina el nuevo estado
 		currentstate_index = newstate_index
+		
+		
 
+		# Si ya no tiene presupuesto termina
+		if budget <= 0:
+			print "Out of budget------------------------------------------------------------"
+			break
+
+		
 
 	# Imprime la politica solo en el ultimo episodio
 	if(i == episodes - 1):	
@@ -273,9 +301,7 @@ for i in range(0,episodes):
 		agent.saveAgentHistoryToJson()
 		agent.plotTrajectory();
 
-	# Si se cumple la condicion elimina la exploracion
-	if end_counter > 30:
-		agent.setEpsilon(0)	
+	
 
 
 	log['rewards'].append(agent.getAccumulatedReward())	
