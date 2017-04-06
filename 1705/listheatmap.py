@@ -24,3 +24,4 @@ def plotheatmap(x,y,intensity,filename='heatmap.png'):
 	# plt.colorbar() #need a colorbar to show the intensity scale
 
 	plt.savefig('Figures/'+filename)
+	plt.close()

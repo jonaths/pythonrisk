@@ -2,16 +2,26 @@ import numpy as np
 from numpy import convolve
 import matplotlib.pyplot as plt
  
-def movingaverage(interval, window_size):
-    window = np.ones(int(window_size))/float(window_size)
-    return np.convolve(interval, window, 'same')
- 
-x = [1,2,3,4,5,6,7,8,9,10]
-y = [3,5,2,4,9,1,7,5,9,1]
- 
-yMA = movingaverage(y,3)
-print yMA
- 
-plt.plot(x[len(x)-len(yMA):],yMA)
-plt.plot(x,y)
-plt.show()
+a = np.arange(90).reshape(15,6)
+print "a"
+print a
+
+b = a[0:2,1:14]
+c = a[2:4,1:14]
+d = a[4:6,1:14]
+
+print "b"
+print b
+
+print "c"
+print c
+
+print "d"
+print d
+
+n = 2
+m = 5
+b = 3
+
+for bi in range(b):
+	print a[bi*n:bi*n+n,1:m]

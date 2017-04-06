@@ -42,6 +42,7 @@ class QLearning:
 		return self.epsilon	
 
 	def updateQ(self, r, state, next_state, action):
+
 	    rsa = r
 	    qsa = self.Q[state][action]
 	    new_q = qsa + self.alpha * (rsa + self.gamma * max(self.Q[next_state, :]) - qsa)
@@ -50,6 +51,7 @@ class QLearning:
 	    # renormalize row to be between 0 and 1
 	    # rn = q[state][q[state] > 0] / np.sum(q[state][q[state] > 0])
 	    # q[state][q[state] > 0] = rn
+	    # print "updateQ:",state,action,next_state,r
 	    return new_q
 
 	def getAccumulatedReward(self):
@@ -59,8 +61,9 @@ class QLearning:
 		return acc_reward	
 
 	def clearHistory(self):
-		print self.history;
-		print self.getAccumulatedReward()
+		print "clearint q history..."
+		print "history",self.history;
+		print "accumulated reward:",self.getAccumulatedReward()
 		self.history = []    
 
 	def getAction(self,state):

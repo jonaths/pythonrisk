@@ -50,8 +50,9 @@ class Reward:
 
 	def reward(self,s,a,sprime):
 
-		x = sprime[0]
-		y = sprime[1]
+		b = sprime[0]
+		x = sprime[1]
+		y = sprime[2]
 
 		reward = -1		
 
@@ -68,6 +69,9 @@ class Reward:
 		elif x==11 and y==0:
 			reward = 16
 		elif x==15 and y==0:
-			reward = 21			
+			reward = 21		
+
+		if b == 0:
+			reward = reward + -10.0		
 		
 		return reward

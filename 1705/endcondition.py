@@ -35,16 +35,23 @@ class EndCondition:
 
 		print stateprime
 
-		if(stateprime[0] == 3 and stateprime[1] == 0):
+		bprime = stateprime[0]
+		xprime = stateprime[1]
+		yprime = stateprime[2]
+
+		if bprime == 0:
 			return True
 
-		if(stateprime[0] == 7 and stateprime[1] == 0):
+		if(xprime == 3 and yprime == 0):
+			return True
+
+		if(xprime == 7 and yprime == 0):
 			return True	
 
-		if(stateprime[0] == 11 and stateprime[1] == 0):
+		if(xprime == 11 and yprime == 0):
 			return True	
 			
-		if(stateprime[0] == 15 and stateprime[1] == 0):
+		if(xprime == 15 and yprime == 0):
 			return True			
 	
 		return False
