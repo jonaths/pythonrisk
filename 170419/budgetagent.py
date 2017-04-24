@@ -48,14 +48,16 @@ class BudgetAgent(Agent):
 
 		if budget <= 0:
 			self.budgetstate = 0
+
 		elif budget	> 0 and budget <= 200:
 			self.budgetstate = 1
+
 		elif budget	> 200 and budget <= 400:
 			self.budgetstate = 2	
+
 		else:
 			self.budgetstate = 3
 
-		# self.budgetstate = 0
 		return self.budget
 
 	def getBudget(self):

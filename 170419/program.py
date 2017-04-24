@@ -27,10 +27,10 @@ print "Inicio..."
 # ylim = 7
 # initial_position = [0,3]
 
-xlim = 16
-ylim = 7
+xlim = 19
+ylim = 17
 blim = 4
-initial_position = [0,0,3]
+initial_position = [1,0,0]
 
 gridworld = GridWorld(xlim,ylim)
 grid_states = np.asarray(gridworld.getStates())
@@ -48,7 +48,7 @@ reward = Reward()
 endcondition = EndCondition()
 
 # El numero de episodios
-episodes = 600
+episodes = 200
 
 # El numero de pasos de cada episodio
 maxsteps = 600
@@ -63,7 +63,6 @@ log = {}
 log['rewards'] = []
 log['steps'] = []
 
-
 for i in range(0,episodes):
 	print "---------------------------------------------------------------------------------------------"
 	print "START EPISODE"
@@ -77,15 +76,15 @@ for i in range(0,episodes):
 
 	for j in range(0, maxsteps):
 
-		print "Nueva iteracion " + str(j) + " ==========================================================="
+		print "Nueva iteracion " + str(i) + "," + str(j) + " ==========================================================="
 
 		# Presupuesto
 		print "budget:", agent.getBudget()
 
-# 		# Epsilon
-# 		epsilon = agent.getBudget() * 1.0 / init_budget
-# 		agent.setEpsilon( epsilon )
-# 		print "epsilon:", epsilon	
+		# Epsilon
+		# epsilon = agent.getBudget() * 1.0 / init_budget
+		# agent.setEpsilon( epsilon )
+		# print "epsilon:", epsilon	
 
 		# Estado actual
 		currentstate = agent.getStates()[currentstate_index]
@@ -181,17 +180,18 @@ b = blim
 
 # Recupera lista de los estados
 agent_states = agent.getStates()
-maxQPerState = agent.getMaxQValPerState()
+valQPerState = agent.getAvgQValPerState()
 x = range(xlim)
 y = range(ylim)
 intensity = np.zeros((xlim,ylim))
 for bi in range(b):
+	print "Processing states for b",bi
 	len_a = len(agent_states[bi*n:bi*n+n,1:m])
 	for s in range(len_a):
 		current_index = bi * len_a + s
-		print str(agent_states[current_index]) ,str(maxQPerState[current_index])
-		intensity[agent_states[current_index][1]][agent_states[current_index][2]] = maxQPerState[current_index]
-	plotheatmap(x,y,intensity.T,'heatmap-new-'+str(bi)+'.png')
+		# print str(agent_states[current_index]) ,str(maxQPerState[current_index])
+		intensity[agent_states[current_index][1]][agent_states[current_index][2]] = valQPerState[current_index]
+	plotheatmap(x,y,intensity.T,'heatmap-' + str(bi) + '-B' + str(maxsteps) + '.png')
 
 
 print "Resultados Finales ########################################################"
@@ -205,8 +205,12 @@ print "Resultados Finales ######################################################
 print "Q Num States:"
 print len(agent.getQ())
 
+print "End Reasons:"
+print endcondition.getReasons()
+
 print "end_counter:"
 print str(end_counter) + "/" + str(episodes)
 
-# analysis = AgentAnalyzer(log)
+analysis = AgentAnalyzer(log)
 # analysis.plotRewardsAndSteps()
+analysis.plotEndReasons(endcondition.getReasons(),'reasonsend-B' + str(maxsteps) + '.png')
