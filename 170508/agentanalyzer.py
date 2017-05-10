@@ -24,3 +24,19 @@ class AgentAnalyzer:
 		plt.plot(x, self.movingaverage(self.info['steps'],w), 'r-')
 		plt.savefig(self.folder+filename)
 
+	def plotEndReasons(self,reasons,filename='reasonsend.png'):
+
+		reasons_keys = list(reasons.keys())
+		print reasons
+		print reasons_keys
+		data = []
+		for r in reasons_keys:
+			data.append(reasons[r])
+		 
+		# Plot
+		plt.pie(data, labels=reasons_keys, autopct='%1.1f%%', startangle=140)
+		 
+		plt.axis('equal')
+		plt.savefig(self.folder+filename)
+		plt.close()
+

@@ -15,6 +15,7 @@ from listheatmap import plotheatmap
 from agentanalyzer import AgentAnalyzer
 import sys
 from agent import Agent
+from riskmapper import RiskMapper
 
 class BudgetAgent(Agent):	
 
@@ -42,21 +43,42 @@ class BudgetAgent(Agent):
 		with open(filename, 'wb') as outfile:
 			json.dump(dict, outfile)
 
-	def setBudget(self,budget):
+	def setBudget(self,budget,max):
+		"""Setea el estado de budget
+		
+		Mapea un numero budget a un estado con 4 posibles niveles. 
+		El ultimo nivel es 0. Los demas se distribuyen proporcionalmente
+		en tercios. 
+		
+		Arguments:
+			budget {[type]} -- el presupuesto actual
+			max {[type]} -- la referencia maxima que divide entre 3
+		
+		Returns:
+			[type] -- [description]
+		"""
 		self.budget = budget	
 		# TO-DO: poner codigo para mapear budget a budgetstate	
 
 		if budget <= 0:
 			self.budgetstate = 0
-		elif budget	> 0 and budget <= 200:
+
+		elif budget	> 0 and budget <= max / 3:
 			self.budgetstate = 1
-		elif budget	> 200 and budget <= 400:
+
+		elif budget	> max / 3 and budget <= max / 3 * 2:
 			self.budgetstate = 2	
+
 		else:
 			self.budgetstate = 3
 
-		# self.budgetstate = 0
+		print "test",self.budgetstate,self.budget	
+
 		return self.budget
+
+	def getShapedReward(self,reward,sprime,risk_profile):
+		risk = RiskMapper.getMap(sprime)
+		return reward - risk_profile * risk
 
 	def getBudget(self):
 		return self.budget

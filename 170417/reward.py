@@ -4,10 +4,8 @@ from math import sin,cos,exp
 from gla import euclid
 import numpy as np
 import json
-from riskmapper import RiskMapper
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-import sys
 
 class Reward:
 	
@@ -58,21 +56,22 @@ class Reward:
 
 		reward = -1		
 
-		if x==5 and y==0:
-			reward = -20
-		elif x==5 and y==5:
-			reward = -20
-		elif x==5 and y==13:
-			reward = -20
-
-		elif x==10 and y==0:
-			reward = 10
-		elif x==14 and y==0:
-			reward = 22
-		elif x==18 and y==0:
-			reward = 34
+		if y == 6:
+			reward = -6
+		elif y == 5:
+			reward = -4
+		elif y == 4:
+			reward = -2
+		elif x==3 and y==0:
+			reward = 6
+		elif x==7 and y==0:
+			reward = 11	
+		elif x==11 and y==0:
+			reward = 16
+		elif x==15 and y==0:
+			reward = 21		
 
 		if b == 0:
-			reward = reward - 20	
+			reward = reward + -10.0		
 		
 		return reward

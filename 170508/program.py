@@ -48,10 +48,10 @@ reward = Reward()
 endcondition = EndCondition()
 
 # El numero de episodios
-episodes = 500
+episodes = 20
 
 # El numero de pasos de cada episodio
-maxsteps = 600
+maxsteps = 100
 
 # Cuantas veces ha encontrado una salida
 end_counter = 0
@@ -59,7 +59,7 @@ end_counter = 0
 # El presupuesto inicial (igual al numero de pasos)
 init_budget = maxsteps - 2
 
-risk_profile = [0.0,1.0,2.0]
+risk_profile = [2.0]
 
 for rp in risk_profile:
 
@@ -175,6 +175,10 @@ for rp in risk_profile:
 		log['rewards'].append(agent.getAccumulatedReward())	
 		log['steps'].append(j+1)
 
+		# Guarda un avance parcial de la tabla Q
+		if(200 % i == 5):
+			agent.saveQ('Output/finalQ-' + 'B' + str(maxsteps) + '-RP' + str(rp) + '-EP' + str(i) + '.txt')
+
 		agent.clearPositionHistory()
 		agent.clearActionHistory()
 		agent.clearQHistory()
@@ -191,6 +195,9 @@ for rp in risk_profile:
 	# Recupera lista de los estados
 	agent_states = agent.getStates()
 	valQPerState = agent.getAvgQValPerState()
+
+	agent.saveQ('Output/finalQ-' + 'B' + str(maxsteps) + '-RP' + str(rp) + '-EP' + str(i) + '.txt')
+
 	x = range(xlim)
 	y = range(ylim)
 	intensity = np.zeros((xlim,ylim))

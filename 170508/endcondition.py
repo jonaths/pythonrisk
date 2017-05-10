@@ -7,10 +7,17 @@ import numpy as np
 class EndCondition:
 	
 	def __init__(self):
-		self.counter = 0
+		self.counter = {}
 
-	def getCounter(self):
+	def getReasons(self):
 		return self.counter	
+
+	def sumReasons(self,key):
+		if key in self.counter:
+			self.counter[key] += 1
+		else:
+			self.counter[key] = 1	
+
 
 	def verify(self,state,action,stateprime,reward):
 		"""Verifica si debe terminar o no
@@ -39,21 +46,37 @@ class EndCondition:
 		xprime = stateprime[1]
 		yprime = stateprime[2]
 
+		# Termina si se queda sin presupuesto
 		if bprime == 0:
+			self.sumReasons('b')
 			return True
 
-		if(xprime == 3 and yprime == 0):
+		# Termina si llega a una mina
+		if(xprime == 5 and yprime == 0):
+			self.sumReasons('m1')
 			return True
 
-		if(xprime == 7 and yprime == 0):
+		if(xprime == 5 and yprime == 5):
+			self.sumReasons('m2')
 			return True	
 
-		if(xprime == 11 and yprime == 0):
+		if(xprime == 5 and yprime == 13):
+			self.sumReasons('m3')
+			return True	
+
+		# Termina si encuentra una salida
+		if(xprime == 10 and yprime == 0):
+			self.sumReasons('e1')
+			return True
+
+		if(xprime == 14 and yprime == 0):
+			self.sumReasons('e2')
+			return True	
+
+		if(xprime == 18 and yprime == 0):
+			self.sumReasons('e3')
 			return True	
 			
-		if(xprime == 15 and yprime == 0):
-			return True			
-	
 		return False
 
 	

@@ -38,5 +38,4 @@ class AgentAnalyzer:
 		 
 		plt.axis('equal')
 		plt.savefig(self.folder+filename)
-		plt.close()
 

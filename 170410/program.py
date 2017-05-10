@@ -48,10 +48,10 @@ reward = Reward()
 endcondition = EndCondition()
 
 # El numero de episodios
-episodes = 600
+episodes = 1000
 
 # El numero de pasos de cada episodio
-maxsteps = 600
+maxsteps = 1200
 
 # Cuantas veces ha encontrado una salida
 end_counter = 0
@@ -62,7 +62,6 @@ init_budget = maxsteps - 2
 log = {}
 log['rewards'] = []
 log['steps'] = []
-
 
 for i in range(0,episodes):
 	print "---------------------------------------------------------------------------------------------"
@@ -77,15 +76,15 @@ for i in range(0,episodes):
 
 	for j in range(0, maxsteps):
 
-		print "Nueva iteracion " + str(j) + " ==========================================================="
+		print "Nueva iteracion " + str(i) + "," + str(j) + " ==========================================================="
 
 		# Presupuesto
 		print "budget:", agent.getBudget()
 
-# 		# Epsilon
-# 		epsilon = agent.getBudget() * 1.0 / init_budget
-# 		agent.setEpsilon( epsilon )
-# 		print "epsilon:", epsilon	
+		# Epsilon
+		epsilon = agent.getBudget() * 1.0 / init_budget
+		agent.setEpsilon( epsilon )
+		print "epsilon:", epsilon	
 
 		# Estado actual
 		currentstate = agent.getStates()[currentstate_index]
@@ -186,10 +185,11 @@ x = range(xlim)
 y = range(ylim)
 intensity = np.zeros((xlim,ylim))
 for bi in range(b):
+	print "Processing states for b",bi
 	len_a = len(agent_states[bi*n:bi*n+n,1:m])
 	for s in range(len_a):
 		current_index = bi * len_a + s
-		print str(agent_states[current_index]) ,str(maxQPerState[current_index])
+		# print str(agent_states[current_index]) ,str(maxQPerState[current_index])
 		intensity[agent_states[current_index][1]][agent_states[current_index][2]] = maxQPerState[current_index]
 	plotheatmap(x,y,intensity.T,'heatmap-new-'+str(bi)+'.png')
 
@@ -205,8 +205,12 @@ print "Resultados Finales ######################################################
 print "Q Num States:"
 print len(agent.getQ())
 
+print "End Reasons:"
+print endcondition.getReasons()
+
 print "end_counter:"
 print str(end_counter) + "/" + str(episodes)
 
-# analysis = AgentAnalyzer(log)
+analysis = AgentAnalyzer(log)
 # analysis.plotRewardsAndSteps()
+analysis.plotEndReasons(endcondition.getReasons())
