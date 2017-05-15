@@ -42,13 +42,13 @@ agent = BudgetAgent(grid_states,actions,blim)
 agent.setAgent(initial_position)
 
 # alpha,gamma,epsilon
-agent.setQLearning(0.1,0.8,1.0)
+agent.setQLearning(0.3,0.8,1.0)
 
 reward = Reward()
 endcondition = EndCondition()
 
 # El numero de episodios
-episodes = 9000
+episodes = 500
 
 # El numero de pasos de cada episodio
 maxsteps = 240
