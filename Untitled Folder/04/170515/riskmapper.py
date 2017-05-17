@@ -21,7 +21,7 @@ class RiskMapper:
 		x = state[1]
 		y = state[2]
 
-		mines = [[3,0],[3,5]]
+		mines = [[5,0],[5,5],[5,13]]
 		for m in mines:
 			if RiskMapper.manhattan_distance(m,[x,y]) == 1:
 				return mineReward / 2

@@ -1,7 +1,6 @@
 import numpy as np
 import random
 import sys
-import warnings
 
 class QLearning:	
 
@@ -43,48 +42,18 @@ class QLearning:
 	def getEpsilon(self):
 		return self.epsilon	
 
-	def updateQ(self, rsa, state, next_state, action):
-
-		print "newQ Update -----------------------------------------------------------|"
-
-		print "rsa:",rsa,", state:",state,", next_state:",next_state,", action:",action
+	def updateQ(self, r, state, next_state, action):
 
 		qsa = self.Q[state][action]
 
-		# Verifica si el qsa actual existe, si no existe asigna rsa
 		if(np.isnan(qsa)):
-			qsa = rsa
-			print "qsa isnan!"
-		
-		print "qsa",qsa, ", alpha:",self.alpha
-
-		# Copia el valor seteado de alpha
-		real_alpha = self.alpha
-
-		# Mira si existe el maximo del siguiente estado
-		with warnings.catch_warnings():
-		    warnings.filterwarnings('error')
-		    try:
-		    	# Si existe recuperalo
-		    	maxNext = np.nanmax(self.Q[next_state, :])	
-		    except Warning as e:
-		    	# Si no existe ignoralo haciendo alpha = 0
-		    	print "maxNext isnan!"
-		    	real_alpha = 0
-		    	maxNext = 0
-		
-		print "maxNext:",maxNext,", realAlpha:",real_alpha
-
-		# Actualiza el valor Q
-		new_q = qsa + real_alpha * (rsa + self.gamma * maxNext - qsa)
-
-		# Actualiza la tabla Q
+			new_q = r
+		else:
+			rsa = r
+			new_q = qsa + self.alpha * (rsa + self.gamma * np.nanmax(self.Q[next_state, :]) - qsa)
+				
 		self.Q[state, action] = new_q
-		print "Q[s,a]:",self.Q[state, action]
-
-		# Guarda la historia
-		self.history.append([state,action,next_state,rsa])
-		print "History:",self.history[:4]
+		self.history.append([state,action,next_state,r])
 		return new_q
 
 	def getAccumulatedReward(self):

@@ -38,7 +38,7 @@ reward = Reward()
 endcondition = EndCondition()
 
 # El numero de episodios
-episodes = 2000
+episodes = 500
 
 # El numero de pasos de cada episodio
 maxsteps = 120
@@ -49,7 +49,7 @@ end_counter = 0
 # El presupuesto inicial (igual al numero de pasos)
 init_budget = maxsteps - 2
 
-risk_profile = [2.0]
+risk_profile = [0.0]
 
 for rp in risk_profile:
 
@@ -144,8 +144,6 @@ for rp in risk_profile:
 			newQ = agent.updateQ(shaped_reward, currentstate_index, newstate_index, action_index)
 			print "newQ:",str(newQ)
 
-
-
 			# Verifica si debe terminar el episodio
 			if endcondition.verify(currentposition,action,newposition,current_reward):
 				print "endingposition:" + str(newposition)
@@ -181,7 +179,7 @@ for rp in risk_profile:
 		log['steps'].append(j+1)
 
 		# Guarda un avance parcial de la tabla Q
-		if(i != 0 and i % 200 == 0):
+		if(i != 0 and i % 1000 == 0):
 			agent.saveQ('Output/qTable-' + 'B' + str(maxsteps) + '-RP' + str(rp) + '-EP' + str(format(i, "05d")) + '.txt')
 
 		agent.clearPositionHistory()
