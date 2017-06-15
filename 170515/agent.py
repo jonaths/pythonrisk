@@ -86,6 +86,12 @@ class Agent(object):
     def clearQHistory(self):
         self.qlearning.clearHistory()
 
+    def resetStateCounter(self):
+        self.qlearning.resetStateCounter()
+
+    def getStateCounter(self, state_index, action_index):
+        return self.qlearning.getStateCounter(state_index, action_index)
+
     def setEpsilon(self, epsilon):
         self.qlearning.setEpsilon(epsilon)
 

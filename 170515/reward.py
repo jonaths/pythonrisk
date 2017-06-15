@@ -58,19 +58,19 @@ class Reward:
 
         if x == 3 and y == 0:
             reward = -20
-        elif x == 3 and y == 5:
+        elif x == 3 and y == 6:
             reward = -20
         # elif x==3 and y==13:
         # 	reward = -20
 
         elif x == 7 and y == 0:
-            reward = 10
+            reward = 20
         elif x == 10 and y == 0:
-            reward = 16
+            reward = 32
         # elif x==13 and y==0:
         # 	reward = 22
 
         if b == 0:
-            reward = reward - 60
+            reward = reward - 20
 
         return reward

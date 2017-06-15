@@ -2,6 +2,7 @@ import random
 import warnings
 
 import numpy as np
+import sys
 
 
 class QLearning:
@@ -12,6 +13,7 @@ class QLearning:
         # Un array con una entrada por cada actualizacion de Q
         # [[s,a,sprime,r],[s,a,sprime,r],...]
         self.history = []
+        self.state_counter = {}
 
     def setValues(self, num_states, num_actions, value):
         """
@@ -38,6 +40,27 @@ class QLearning:
     def getEpsilon(self):
         return self.epsilon
 
+    def updateStateCounter(self, state_index):
+        """
+        Actualiza el contador de estados o lo crea para el estado si no existe
+        :param state_index: el indice del contador de estados
+        :return: 
+        """
+
+        if state_index not in self.state_counter:
+            self.state_counter[state_index] = 1
+        else:
+            self.state_counter[state_index] += 1
+
+    def resetStateCounter(self):
+        print "reseting state_counter..."
+        self.state_counter = {}
+
+    def getStateCounter(self, state_index, action_index):
+        if state_index not in self.state_counter:
+            self.state_counter[(state_index, action_index)] = 1
+        return self.state_counter[(state_index, action_index)]
+
     def updateQ(self, rsa, state, next_state, action):
 
         print "newQ Update -----------------------------------------------------------|"
@@ -47,7 +70,7 @@ class QLearning:
         qsa = self.Q[state][action]
 
         # Verifica si el qsa actual existe, si no existe asigna rsa
-        if (np.isnan(qsa)):
+        if np.isnan(qsa):
             qsa = rsa
             print "qsa isnan!"
 
@@ -80,6 +103,8 @@ class QLearning:
         # Guarda la historia
         self.history.append(dict(state=state, action=action, next_state=next_state, rsa=rsa))
         print "History:", self.history[:4]
+        # Actualiza el contador de estados
+        self.updateStateCounter((state, action))
         return new_q
 
     def getHistory(self):
@@ -95,6 +120,8 @@ class QLearning:
         print "clearing q history..."
         print "history", self.history;
         print "accumulated reward:", self.getAccumulatedReward()
+
+        # Resetea el historial
         self.history = []
 
     def getAction(self, state):
@@ -102,14 +129,22 @@ class QLearning:
         # Probabilidad de escoger una accion aleatoria
         prob = random.random()
 
+        num_states = np.asarray(self.Q).shape[1]
+
         # Si epsilon = 1 siempre elige una aleatoria
         # Si epsilon = 0 nunca elige una aleatoria
         if prob < self.epsilon:
+            # Escoge una accion aleatoria
             print "action random"
-            num_states = np.asarray(self.Q).shape[1]
+
             action = random.randint(0, num_states - 1)
         else:
-            action = np.nanargmax(self.Q[state])
+            # Si hay un maximo regresa el maximo, de lo contrario la accion aleatoria
+            try:
+                action = np.nanargmax(self.Q[state])
+            except ValueError:
+                action = random.randint(0, num_states - 1)
+
             print "action max " + str(action) + " " + str(self.Q[state])
 
         return action
@@ -128,5 +163,5 @@ class QLearning:
             avg.append(np.average(r))
         return avg
 
-    # def reMapQ(states,statesprime):
-    # 	aqui voy... funcion para remapear Q
+        # def reMapQ(states,statesprime):
+        # 	aqui voy... funcion para remapear Q

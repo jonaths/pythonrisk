@@ -14,176 +14,190 @@ print "Inicio..."
 # initial_position = [0,3]
 
 xlim = 11
-ylim = 6
+ylim = 7
 blim = 4
 initial_position = [3, 0, 0]
 
-reward = Reward()
-endcondition = EndCondition()
-
 # El numero de episodios
-episodes = 6
-
-# El numero de pasos de cada episodio
-maxsteps = 5
+episodes = 1000
 
 # Cuantas veces ha encontrado una salida
 end_counter = 0
 
-# El presupuesto inicial (igual al numero de pasos)
-init_budget = maxsteps - 2
+# Los diferentes perfiles de riesgo
+risk_profile = [0.0, 1.0, 2.0, 3.0, 4.0]
 
-risk_profile = [0.0, 1.0]
+# Los diferentes presupuestos
+budgets = [30, 90]
 
-for rp in risk_profile:
+for b in budgets:
+
     print "#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#"
-    print "RP " + str(rp) + " ------------------------------------------------------------------------------"
 
-    gridworld = GridWorld(xlim, ylim)
-    grid_states = np.asarray(gridworld.getStates())
-    actions = np.asarray(gridworld.getActions())
+    reward = Reward()
+    endcondition = EndCondition()
 
-    # Define al agente
-    agent = BudgetAgent(grid_states, actions, blim)
-    agent.setAgent(initial_position)
+    maxsteps = b
 
-    # alpha,gamma,epsilon
-    agent.setQLearning(0.3, 0.8, 1.0)
+    # El presupuesto inicial (igual al numero de pasos)
+    init_budget = maxsteps - 2
 
-    log = {}
-    log['rewards'] = []
-    log['steps'] = []
+    for rp in risk_profile:
+        print "#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#"
 
-    for i in range(0, episodes):
-        print "---------------------------------------------------------------------------------------------"
-        print "START EPISODE"
+        gridworld = GridWorld(xlim, ylim)
+        grid_states = np.asarray(gridworld.getStates())
+        actions = np.asarray(gridworld.getActions())
 
-        currentstate_index = agent.getCurrentState()
-        agent.setBudget(init_budget, maxsteps)
-        print "currentstate_index:", currentstate_index
-        print "budget:", agent.getBudget()
+        # Define al agente
+        agent = BudgetAgent(grid_states, actions, blim)
+        agent.setAgent(initial_position)
 
-        print "Nuevo episodio " + str(i) + "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+        # alpha,gamma,epsilon
+        agent.setQLearning(0.3, 0.8, 1.0)
 
-        for j in range(0, maxsteps):
+        log = {'rewards': [], 'steps': []}
 
-            print "Nueva iteracion " + str(i) + "," + str(
-                j) + " ==========================================================="
+        for i in range(0, episodes):
+            print "---------------------------------------------------------------------------------------------"
+            print "START EPISODE"
 
-            # Presupuesto
+            currentstate_index = agent.getCurrentState()
+            agent.setBudget(init_budget, maxsteps)
+            print "currentstate_index:", currentstate_index
             print "budget:", agent.getBudget()
 
-            # Epsilon
-            # epsilon = agent.getBudget() * 1.0 / init_budget
-            # agent.setEpsilon( epsilon )
-            # print "epsilon:", epsilon
+            for j in range(0, maxsteps):
 
-            # Estado actual
-            currentstate = agent.getStates()[currentstate_index]
-            currentposition = agent.getCurrentPosition()
-            print "currentstate:", currentstate_index, currentstate
+                print '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++', str(b), str(rp), str(i), str(j)
 
-            # Posicion actual (considerando todo el vector de estado)
-            # Realmente la posicion son la columna 1 y 2
-            print "currentposition:", currentposition
+                # Presupuesto
+                print "budget:", agent.getBudget()
 
-            # Se asegura de que el movimiento sea valido
-            validMove = False
-            while not validMove:
+                # Epsilon (explora durante la primera mitad de su presupuesto)
+                # thres = 0.75
+                # prop_epsilon = agent.getBudget() * 1.0 / init_budget
+                # epsilon = prop_epsilon if prop_epsilon > thres else thres
+                # agent.setEpsilon(epsilon)
+                # print "epsilon:", epsilon
 
-                action_index = agent.getAction('qlearning')
-                action = agent.getActions()[action_index]
-                print "newaction:", action_index, action
+                # epsilon = 1.0 / agent.getStateCounter(currentstate_index)
+                # agent.setEpsilon(epsilon)
+                # print "epsilon:", agent.getStateCounter(currentstate_index), epsilon
 
-                # Recupera la nueva posicion a traves de ejecutar una accion
-                newposition = gridworld.move(agent.getCurrentPosition()[-2:], action)
-                print "newposition:", newposition
+                # Estado actual
+                currentstate = agent.getStates()[currentstate_index]
+                currentposition = agent.getCurrentPosition()
+                print "currentstate:", currentstate_index, currentstate
 
-                if newposition:
-                    validMove = True
-                    print "+ valid move"
+                # Posicion actual (considerando to do el vector de estado)
+                # Realmente la posicion son la columna 1 y 2
+                print "currentposition:", currentposition
 
-            # Incluye el presupuesto en la posicion
-            newposition = np.append([agent.getBudgetState()], newposition)
-            print "newposition with budget:", newposition
+                # Se asegura de que el movimiento sea valido
+                validMove = False
+                while not validMove:
 
-            # Calcula la recompensa que devuelve el ambiente
-            current_reward = reward.reward(currentposition, action, newposition)
-            print "reward:", current_reward
+                    action_index = agent.getAction('qlearning')
+                    action = agent.getActions()[action_index]
+                    print "newaction:", action_index, action
 
-            # Calcula la shaped_reward que considera el riesgo inherente, la recompensa real y el perfil de riesgo
-            shaped_reward = agent.getShapedReward(current_reward, newposition, rp)
-            print "shaped_reward:", shaped_reward
+                    # Recupera la nueva posicion a traves de ejecutar una accion
+                    newposition = gridworld.move(agent.getCurrentPosition()[-2:], action)
+                    print "newposition:", newposition
 
-            # Actualiza el budget con la ultima recompensa real (le pasa maxsteps para calcular automaticamente las
-            # divisiones en tres tercios)
-            agent.setBudget(agent.getBudget() + current_reward, maxsteps)
+                    if newposition:
+                        validMove = True
+                        print "+ valid move"
 
-            # Convierte newposition de numpy a lista
-            agent.setAgent(newposition.tolist())
+                # Incluye el presupuesto en la posicion
+                newposition = np.append([agent.getBudgetState()], newposition)
+                print "newposition with budget:", newposition
 
-            newstate_index = agent.getCurrentState()
-            print "newstate:", newstate_index
+                # Calcula la recompensa que devuelve el ambiente
+                current_reward = reward.reward(currentposition, action, newposition)
+                print "reward:", current_reward
 
-            print "Q epsilon:", str(agent.getEpsilon())
+                # Calcula la shaped_reward que considera el riesgo inherente, la recompensa real y el perfil de riesgo
+                shaped_reward = agent.getShapedReward(current_reward, newposition, rp)
+                print "shaped_reward:", shaped_reward
 
-            # Actualiza la tabla Q con la shaped reward, no con la recompensa real
-            newQ = agent.updateQ(shaped_reward, currentstate_index, newstate_index, action_index)
-            print "newQ:", str(newQ)
+                # Actualiza el budget con la ultima recompensa real (le pasa maxsteps para calcular automaticamente las
+                # divisiones en tres tercios)
+                agent.setBudget(agent.getBudget() + current_reward, maxsteps)
 
-            # Verifica si debe terminar el episodio
-            if endcondition.verify(currentposition, action, newposition, current_reward):
-                print "endingposition:" + str(newposition)
-                end_counter = end_counter + 1
-                print "Ending ------------------------------------------------------------------"
-                break
+                # Convierte newposition de numpy a lista
+                agent.setAgent(newposition.tolist())
 
-            # Determina el nuevo estado
-            currentstate_index = newstate_index
+                newstate_index = agent.getCurrentState()
+                print "newstate:", newstate_index
 
-            # name = input('Enter para continuar... ')
-            # print('Hello ', name)
+                print "Q epsilon:", str(agent.getEpsilon())
 
-            # Si ya no tiene presupuesto termina
-            # if agent.getBudget() <= 0:
-            # 	print "Out of budget------------------------------------------------------------"
-            # 	break
+                # Actualiza la tabla Q con la shaped reward, no con la recompensa real
+                newQ = agent.updateQ(shaped_reward, currentstate_index, newstate_index, action_index)
+                print "newQ:", str(newQ)
 
-        # Si se cumple la condicion elimina la exploracion
-        # if end_counter > 10:
-        # 	agent.setEpsilon(0)
+                # Verifica si debe terminar el episodio
+                if endcondition.verify(currentposition, action, newposition, current_reward):
+                    print "endingposition:" + str(newposition)
+                    end_counter = end_counter + 1
+                    print "Ending ------------------------------------------------------------------"
+                    break
 
-        log['rewards'].append(agent.getAccumulatedReward())
-        log['steps'].append(j + 1)
+                # Determina el nuevo estado
+                currentstate_index = newstate_index
 
-        if i != 0 and i % 2 == 0 or i == episodes - 1:
-            name = 'B' + str(maxsteps) + '-RP' + str(rp) + '-EP' + str(format(i, "05d"))
+                # Actualiza el epsilon considerando cada par de estado accion
+                # state_counter = agent.getStateCounter(currentstate_index, action_index)
+                epsilon = 0.85
+                agent.setEpsilon(epsilon)
+                print "epsilon:", agent.getStateCounter(currentstate_index, action_index), epsilon
 
-            # Guarda un avance parcial de la tabla Q
-            agent.saveQ('Output/qTable-' + name + '.txt')
-            # Guarda el historial de los episodios
-            agent.saveHistoryToJson('Output/history-' + name + '.json')
+            log['rewards'].append(agent.getAccumulatedReward())
+            log['steps'].append(j + 1)
 
-        agent.clearPositionHistory()
-        agent.clearQHistory()
+            # Cada 100 iteraciones guarda la tabla Q y el historial de movimientos
+            if i != 0 and i % 1000 == 0:
+                name = 'B' + str(maxsteps) + '-RP' + str(rp) + '-EP' + str(format(i, "05d"))
 
-        agent.setAgent(initial_position)
-        print "END EPISODE"
-        print "---------------------------------------------------------------------------------------------"
+                # Guarda un avance parcial de la tabla Q
+                agent.saveQ('Output/qTable-' + name + '.txt')
+                # Guarda el historial de los episodios
+                agent.saveHistoryToJson('Output/history-' + name + '.json')
 
-    name = 'B' + str(maxsteps) + '-RP' + str(rp) + '-EP' + str(format(i, "05d"))
+            # En la ultima iteracion guarda la tabla Q y el historial de movimientos
+            if i == episodes - 1:
+                name = 'B' + str(maxsteps) + '-RP' + str(rp) + '-EP' + str(format(i, "05d"))
 
-    print "Resultados Finales ########################################################"
+                # Guarda un avance parcial de la tabla Q
+                agent.saveQ('Output/qTableFinal/qTable-' + name + '.txt')
+                # Guarda el historial de los episodios
+                agent.saveHistoryToJson('Output/history-' + name + '.json')
 
-    print "Q Num States:"
-    print len(agent.getQ())
+            agent.clearPositionHistory()
+            agent.clearQHistory()
 
-    print "End Reasons:"
-    print endcondition.getReasons()
+            agent.setAgent(initial_position)
+            print "END EPISODE"
+            print "---------------------------------------------------------------------------------------------"
 
-    print "end_counter:"
-    print str(end_counter) + "/" + str(episodes)
+        # Resetear contador de estados visitados
+        agent.resetStateCounter()
 
-    analysis = AgentAnalyzer(log)
-    # analysis.plotRewardsAndSteps()
-    analysis.plotEndReasons(endcondition.getReasons(), 'reasonsend-B' + str(maxsteps) + '-' + str(rp) + '.png')
+        name = 'B' + str(maxsteps) + '-RP' + str(rp) + '-EP' + str(format(i, "05d"))
+
+        print "Resultados Finales ########################################################"
+
+        print "Q Num States:"
+        print len(agent.getQ())
+
+        print "End Reasons:"
+        print endcondition.getReasons()
+
+        print "end_counter:"
+        print str(end_counter) + "/" + str(episodes)
+
+        analysis = AgentAnalyzer(log)
+        # analysis.plotRewardsAndSteps()
+        analysis.plotEndReasons(endcondition.getReasons(), 'reasonsend-B' + str(maxsteps) + '-' + str(rp) + '.png')
