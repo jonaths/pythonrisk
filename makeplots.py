@@ -32,10 +32,10 @@ df = pd.read_csv('rewards.csv', names=['b', 'rp', 'ep', 'r', 'steps', 'final'])
 df['label'] = df.b.astype(str).str.cat(df.rp.astype(str), sep='-')
 
 
-b = '30'
-#rp = '2.0'
-# labels = df.label.unique()
-# labels = ['30-' + rp, '60-' + rp, '120-' + rp, '180-' + rp]
+b = '180'
+#rp = '4.0'
+labels = df.label.unique()
+#labels = ['30-' + rp, '60-' + rp, '120-' + rp, '180-' + rp]
 labels = [b + '-0.0', b + '-2.0', b + '-4.0']
 window = 100
 
@@ -63,12 +63,12 @@ for l in labels:
 
 plt.legend(loc=0, borderaxespad=0.,fontsize="xx-small")
 plt.savefig('Figures/b-' + b + '.png')
-#plt.savefig('Figures/rp-' + rp + '.png')
+# plt.savefig('Figures/rp-' + rp + '.png')
+# plt.savefig('Figures/all.png')
 plt.show()
 
 f, axarr = plt.subplots(2, sharex=True)
 axarr[0].set_title('Sharing X axis')
-axarr[1].scatter(x, y)
 
 
 
