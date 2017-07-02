@@ -61,12 +61,12 @@ class EndCondition:
         # 	return True
 
         # Termina si encuentra una salida
-        if xprime == 7 and yprime == 0:
-            self.sumReasons('e1')
+        if xprime == 10 and yprime == 6:
+            self.sumReasons('e2')
             return True
 
         if xprime == 10 and yprime == 0:
-            self.sumReasons('e2')
+            self.sumReasons('e1')
             return True
 
         # if(xprime == 18 and yprime == 0):

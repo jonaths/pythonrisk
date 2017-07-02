@@ -63,10 +63,10 @@ class Reward:
         # elif x==3 and y==13:
         # 	reward = -20
 
-        elif x == 7 and y == 0:
-            reward = 20
-        elif x == 10 and y == 0:
+        elif x == 10 and y == 6:
             reward = 60
+        elif x == 10 and y == 0:
+            reward = 20
         # elif x==13 and y==0:
         # 	reward = 22
 

@@ -36,7 +36,7 @@ b = '180'
 #rp = '4.0'
 labels = df.label.unique()
 #labels = ['30-' + rp, '60-' + rp, '120-' + rp, '180-' + rp]
-labels = [b + '-0.0', b + '-2.0', b + '-4.0']
+#labels = [b + '-0.0', b + '-2.0', b + '-4.0']
 window = 100
 
 f, axarr = plt.subplots(2, sharex=True)
@@ -62,9 +62,9 @@ for l in labels:
     axarr[1].set_title('Timesteps')  
 
 plt.legend(loc=0, borderaxespad=0.,fontsize="xx-small")
-plt.savefig('Figures/b-' + b + '.png')
+# plt.savefig('Figures/b-' + b + '.png')
 # plt.savefig('Figures/rp-' + rp + '.png')
-# plt.savefig('Figures/all.png')
+plt.savefig('Figures/all.png')
 plt.show()
 
 f, axarr = plt.subplots(2, sharex=True)
